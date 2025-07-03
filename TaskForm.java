@@ -3,7 +3,7 @@ import java.time.LocalDate;
 import javax.swing.*;
 
 public class TaskForm extends JDialog {
-    private JTextField nameField;
+    private JComboBox<String> categoryBox;
     private JTextArea descriptionArea;
     private JComboBox<Integer> dayBox;
     private JComboBox<String> monthBox;
@@ -17,9 +17,12 @@ public class TaskForm extends JDialog {
         setSize(350, 400);
         setLayout(new BorderLayout());
 
-        JPanel panel = new JPanel(new GridLayout(0,1,5,5));
+        JPanel panel = new JPanel(new GridLayout(0, 1, 5, 5));
 
-        nameField = new JTextField();
+        // Category dropdown with 8 realistic options
+        String[] categories = {"Work", "Personal", "Shopping", "Fitness", "Finance", "Study", "Social", "Miscellaneous"};
+        categoryBox = new JComboBox<>(categories);
+
         descriptionArea = new JTextArea(3, 20);
 
         // Day combo box
@@ -42,22 +45,25 @@ public class TaskForm extends JDialog {
 
         priorityBox = new JComboBox<>(new String[]{"Low", "Medium", "High"});
 
+        // Fill form if editing
         if (existingTask != null) {
-            nameField.setText(existingTask.getName());
+            categoryBox.setSelectedItem(existingTask.getCategory());
             descriptionArea.setText(existingTask.getDescription());
             priorityBox.setSelectedItem(existingTask.getPriority());
 
-            // Parse due date
+            // Parse due date string (expected format "12-Jan-2025")
             String[] parts = existingTask.getDueDate().split("-");
             if (parts.length == 3) {
-                dayBox.setSelectedItem(Integer.parseInt(parts[0]));
-                monthBox.setSelectedItem(parts[1]);
-                yearBox.setSelectedItem(Integer.parseInt(parts[2]));
+                try {
+                    dayBox.setSelectedItem(Integer.parseInt(parts[0]));
+                    monthBox.setSelectedItem(parts[1]);
+                    yearBox.setSelectedItem(Integer.parseInt(parts[2]));
+                } catch (NumberFormatException ignored) {}
             }
         }
 
-        panel.add(new JLabel("Name:"));
-        panel.add(nameField);
+        panel.add(new JLabel("Category:"));
+        panel.add(categoryBox);
         panel.add(new JLabel("Description:"));
         panel.add(new JScrollPane(descriptionArea));
         panel.add(new JLabel("Due Date:"));
@@ -81,7 +87,7 @@ public class TaskForm extends JDialog {
                              monthBox.getSelectedItem() + "-" +
                              yearBox.getSelectedItem();
             task = new Task(
-                nameField.getText(),
+                (String) categoryBox.getSelectedItem(),
                 descriptionArea.getText(),
                 dueDate,
                 (String) priorityBox.getSelectedItem(),

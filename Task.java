@@ -1,12 +1,12 @@
 public class Task {
-    private String name;
+    private String category;
     private String description;
     private String dueDate;
     private String priority;
     private boolean completed;
 
-    public Task(String name, String description, String dueDate, String priority, boolean completed) {
-        this.name = name;
+    public Task(String category, String description, String dueDate, String priority, boolean completed) {
+        this.category = category;
         this.description = description;
         this.dueDate = dueDate;
         this.priority = priority;
@@ -15,21 +15,20 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Name: " + name 
+        return "Category: " + category
             + " | Desc: " + description
-            + " | Due: " + dueDate 
-            + " | Priority: " + priority 
+            + " | Due: " + dueDate
+            + " | Priority: " + priority
             + " | " + (completed ? "Completed" : "Not Completed");
     }
 
-    // Getters and setters
-    public String getName() { return name; }
+    public String getCategory() { return category; }
     public String getDescription() { return description; }
     public String getDueDate() { return dueDate; }
     public String getPriority() { return priority; }
     public boolean isCompleted() { return completed; }
 
-    public void setName(String name) { this.name = name; }
+    public void setCategory(String category) { this.category = category; }
     public void setDescription(String description) { this.description = description; }
     public void setDueDate(String dueDate) { this.dueDate = dueDate; }
     public void setPriority(String priority) { this.priority = priority; }
