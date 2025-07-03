@@ -35,18 +35,35 @@ public class ToDoListApp extends JFrame {
         TableColumn statusColumn = taskTable.getColumnModel().getColumn(4);
         statusColumn.setCellEditor(new DefaultCellEditor(statusComboBox));
 
-        // Renderer to change row color
+        // Renderer to change row color based on priority
         taskTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value,
                                                            boolean isSelected, boolean hasFocus,
                                                            int row, int col) {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
-                String status = (String) table.getValueAt(row, 4);
-                if ("Completed".equals(status)) {
-                    c.setBackground(new Color(200, 255, 200)); // light green
+                String priority = (String) table.getValueAt(row, 3); // priority is column index 3
+
+                if (!isSelected) {
+                    switch (priority) {
+                        case "High":
+                            c.setBackground(new Color(66, 165, 245)); // #42A5F5 dark blue
+                            break;
+                        case "Medium":
+                            c.setBackground(new Color(144, 202, 249)); // #90CAF9 medium blue
+                            break;
+                        case "Low":
+                            c.setBackground(new Color(227, 242, 253)); // #E3F2FD light blue
+                            break;
+                        default:
+                            c.setBackground(Color.WHITE);
+                    }
                 } else {
-                    c.setBackground(new Color(255, 230, 180)); // light orange
+                    c.setBackground(table.getSelectionBackground());
+                }
+
+                if (c instanceof JLabel) {
+                    ((JLabel) c).setOpaque(true);
                 }
                 return c;
             }
