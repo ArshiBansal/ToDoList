@@ -1,34 +1,59 @@
 import java.awt.*;
+import java.time.LocalDate;
 import javax.swing.*;
 
 public class TaskForm extends JDialog {
     private JTextField nameField;
     private JTextArea descriptionArea;
-    private JTextField dueDateField;
+    private JComboBox<Integer> dayBox;
+    private JComboBox<String> monthBox;
+    private JComboBox<Integer> yearBox;
     private JComboBox<String> priorityBox;
-    private JCheckBox completedCheck;
     private boolean submitted = false;
     private Task task;
 
     public TaskForm(JFrame parent, Task existingTask) {
         super(parent, existingTask == null ? "Add Task" : "Edit Task", true);
-        setSize(300, 400);
+        setSize(350, 400);
         setLayout(new BorderLayout());
 
         JPanel panel = new JPanel(new GridLayout(0,1,5,5));
 
         nameField = new JTextField();
         descriptionArea = new JTextArea(3, 20);
-        dueDateField = new JTextField();
+
+        // Day combo box
+        dayBox = new JComboBox<>();
+        for (int d = 1; d <= 31; d++) {
+            dayBox.addItem(d);
+        }
+
+        // Month combo box
+        String[] months = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                           "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+        monthBox = new JComboBox<>(months);
+
+        // Year combo box
+        yearBox = new JComboBox<>();
+        int currentYear = LocalDate.now().getYear();
+        for (int y = currentYear - 5; y <= currentYear + 5; y++) {
+            yearBox.addItem(y);
+        }
+
         priorityBox = new JComboBox<>(new String[]{"Low", "Medium", "High"});
-        completedCheck = new JCheckBox("Completed");
 
         if (existingTask != null) {
             nameField.setText(existingTask.getName());
             descriptionArea.setText(existingTask.getDescription());
-            dueDateField.setText(existingTask.getDueDate());
             priorityBox.setSelectedItem(existingTask.getPriority());
-            completedCheck.setSelected(existingTask.isCompleted());
+
+            // Parse due date
+            String[] parts = existingTask.getDueDate().split("-");
+            if (parts.length == 3) {
+                dayBox.setSelectedItem(Integer.parseInt(parts[0]));
+                monthBox.setSelectedItem(parts[1]);
+                yearBox.setSelectedItem(Integer.parseInt(parts[2]));
+            }
         }
 
         panel.add(new JLabel("Name:"));
@@ -36,11 +61,15 @@ public class TaskForm extends JDialog {
         panel.add(new JLabel("Description:"));
         panel.add(new JScrollPane(descriptionArea));
         panel.add(new JLabel("Due Date:"));
-        panel.add(dueDateField);
+
+        JPanel datePanel = new JPanel();
+        datePanel.add(dayBox);
+        datePanel.add(monthBox);
+        datePanel.add(yearBox);
+        panel.add(datePanel);
+
         panel.add(new JLabel("Priority:"));
         panel.add(priorityBox);
-        panel.add(new JLabel("Completed:"));
-        panel.add(completedCheck);
 
         JPanel buttonPanel = new JPanel();
         JButton saveButton = new JButton("Save");
@@ -48,12 +77,15 @@ public class TaskForm extends JDialog {
 
         saveButton.addActionListener(e -> {
             submitted = true;
+            String dueDate = dayBox.getSelectedItem() + "-" +
+                             monthBox.getSelectedItem() + "-" +
+                             yearBox.getSelectedItem();
             task = new Task(
                 nameField.getText(),
                 descriptionArea.getText(),
-                dueDateField.getText(),
+                dueDate,
                 (String) priorityBox.getSelectedItem(),
-                completedCheck.isSelected()
+                existingTask != null && existingTask.isCompleted()
             );
             setVisible(false);
         });
