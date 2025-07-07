@@ -33,29 +33,6 @@ public class ToDoListApp extends JFrame {
         TableColumn statusColumn = taskTable.getColumnModel().getColumn(4);
         statusColumn.setCellEditor(new DefaultCellEditor(statusComboBox));
 
-        // Row coloring
-        taskTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value,
-                                                           boolean isSelected, boolean hasFocus,
-                                                           int row, int col) {
-                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
-                String priority = (String) table.getValueAt(row, 3);
-                if (!isSelected) {
-                    switch (priority) {
-                        case "High": c.setBackground(new Color(66, 165, 245)); break;
-                        case "Medium": c.setBackground(new Color(144, 202, 249)); break;
-                        case "Low": c.setBackground(new Color(227, 242, 253)); break;
-                        default: c.setBackground(Color.WHITE);
-                    }
-                } else {
-                    c.setBackground(table.getSelectionBackground());
-                }
-                ((JLabel) c).setOpaque(true);
-                return c;
-            }
-        });
-
         // Table model listener
         tableModel.addTableModelListener(e -> {
             int row = e.getFirstRow();
